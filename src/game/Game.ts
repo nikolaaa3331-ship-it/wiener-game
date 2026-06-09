@@ -34,7 +34,7 @@ export class Game {
   async start(): Promise<void> {
     await this.app.init({
       width: 800,
-      height: 500,
+      height: 460,
       backgroundColor: 0x87ceeb,
     });
 
