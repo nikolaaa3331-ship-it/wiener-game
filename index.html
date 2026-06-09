@@ -9,6 +9,7 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background: #0d1b2a; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
 
+      /* Scale canvas to fit any screen while preserving aspect ratio */
       canvas {
         display: block;
         max-width: 100vw;
@@ -16,6 +17,7 @@
         object-fit: contain;
       }
 
+      /* Shown on mobile portrait — prompts the user to rotate their device */
       #rotate-prompt {
         display: none;
         position: fixed;
@@ -34,6 +36,7 @@
       #rotate-prompt p { font-size: 14px; color: #f5a623; line-height: 2; }
       @keyframes rotateHint { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
 
+      /* Touch controls container — only visible on mobile landscape */
       #touch-controls {
         display: none;
         position: fixed;
@@ -47,6 +50,7 @@
         pointer-events: none;
       }
 
+      /* D-pad layout using CSS grid */
       .dpad {
         display: grid;
         grid-template-columns: 50px 50px 50px;
@@ -68,6 +72,7 @@
       .touch-btn.active { background: rgba(233,69,96,0.6); }
       .touch-btn.empty { background: transparent; border: none; pointer-events: none; }
 
+      /* Fire button — larger and gold colored to stand out */
       #touch-fire {
         width: 70px; height: 70px; border-radius: 50%;
         background: rgba(245,166,35,0.25);
@@ -82,11 +87,36 @@
       }
       #touch-fire.active { background: rgba(245,166,35,0.6); }
 
+      /* Restart button — shown centered on game over, hidden during play */
+      #touch-restart {
+        display: none;
+        position: fixed;
+        bottom: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+        pointer-events: all;
+      }
+      #touch-restart button {
+        padding: 15px 40px;
+        background: #e94560;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-family: monospace;
+        cursor: pointer;
+        letter-spacing: 1px;
+      }
+
+      /* Show rotate prompt on portrait mobile */
       @media (max-width: 768px) and (orientation: portrait) {
         #rotate-prompt { display: flex; }
       }
+      /* Show touch controls on landscape mobile */
       @media (max-width: 900px) and (orientation: landscape) {
         #touch-controls { display: flex; }
+        #touch-restart { display: none; } /* controlled by JS */
       }
     </style>
   </head>
@@ -113,9 +143,17 @@
       <div id="touch-fire">🔥</div>
     </div>
 
+    <!-- Restart button shown on game over for mobile users who have no Enter key -->
+    <div id="touch-restart">
+      <button onclick="window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter', bubbles: true }))">
+        ИГРАЙ ОТНОВО
+      </button>
+    </div>
+
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
     <script>
+      // Maps a touch button to a keyboard key event so the game logic stays unchanged
       function setupTouch(id, key) {
         const el = document.getElementById(id);
         if (!el) return;
