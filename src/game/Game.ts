@@ -73,6 +73,10 @@ export class Game {
     this.gameOver = false;
     this.spawnTimer = 0;
 
+    // Hide the mobile restart button when a new round begins
+    const restartBtn = document.getElementById('touch-restart');
+    if (restartBtn) restartBtn.style.display = 'none';
+
     this.background = new Background(this.app);
     this.hero = new Hero(this.app, this.heroType);
 
@@ -237,6 +241,10 @@ export class Game {
     if (Math.floor(this.score) > currentHighScore) {
       localStorage.setItem('skyDefenderHighScore', Math.floor(this.score).toString());
     }
+
+    // Show mobile restart button for devices without a keyboard
+    const restartBtn = document.getElementById('touch-restart');
+    if (restartBtn) restartBtn.style.display = 'block';
 
     const gameOverText = new Text({
       text: 'GAME OVER',
