@@ -9,6 +9,13 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background: #0d1b2a; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
 
+      canvas {
+        display: block;
+        max-width: 100vw;
+        max-height: 100vh;
+        object-fit: contain;
+      }
+
       #rotate-prompt {
         display: none;
         position: fixed;
@@ -47,11 +54,14 @@
       }
       .touch-btn.active { background: rgba(245,166,35,0.6); }
 
-      @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
-        #touch-controls { display: block; }
-      }
-      @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+      /* Телефон в портрет — покажи rotate prompt */
+      @media (max-width: 768px) and (orientation: portrait) {
         #rotate-prompt { display: flex; }
+      }
+
+      /* Телефон в landscape — покажи fire бутон */
+      @media (max-width: 900px) and (orientation: landscape) {
+        #touch-controls { display: block; }
       }
     </style>
   </head>
@@ -69,7 +79,6 @@
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
     <script>
-      // Стрелба бутон
       function setupTouch(id, key) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -84,7 +93,6 @@
       }
       setupTouch('touch-fire', 'Space');
 
-      // Движение с пръст — самолетът следва touch позицията
       let lastTouch = null;
       document.addEventListener('touchstart', (e) => {
         if (e.target.closest('#touch-fire')) return;
@@ -98,8 +106,6 @@
         const dx = touch.clientX - lastTouch.clientX;
         const dy = touch.clientY - lastTouch.clientY;
         lastTouch = touch;
-
-        // Изпращаме custom event с delta
         window.dispatchEvent(new CustomEvent('touchmove-delta', { detail: { dx, dy } }));
       }, { passive: true });
 
